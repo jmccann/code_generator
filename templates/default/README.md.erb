@@ -1,0 +1,44 @@
+# <%= cookbook_name %>
+
+TODO: Enter the cookbook description here.
+
+## Supported Platforms
+
+Tested And Validated On
+- CentOS 6.6
+
+## Usage
+
+TODO: Include usage patterns of any providers or recipes.
+
+### <%= cookbook_name %>::default
+
+Include `<%= cookbook_name %>` in your run_list.
+
+```json
+{
+  "run_list": [
+    "recipe[<%= cookbook_name %>::default]"
+  ]
+}
+```
+
+## Testing
+
+* Linting - Rubocop and Foodcritic
+* Spec - ChefSpec
+* Integration - Test Kitchen
+
+```
+bundle exec foodcritic -f any -X spec .
+bundle exec rspec --color --format progress
+bundle exec rubocop
+```
+
+## License and Authors
+
+Author:: <%= copyright_holder %> (<<%= email %>>)
+
+```text
+<%= license_description %>
+```
