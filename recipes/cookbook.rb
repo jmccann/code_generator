@@ -18,11 +18,13 @@ template "#{cookbook_dir}/README.md" do
 end
 
 # LICENSE
-
 template "#{cookbook_dir}/LICENSE" do
   source "LICENSE.#{context.license}.erb"
   helpers(ChefDK::Generator::TemplateHelper)
 end
+
+# Gemfile
+cookbook_file "#{cookbook_dir}/Gemfile"
 
 # chefignore
 cookbook_file "#{cookbook_dir}/chefignore"
