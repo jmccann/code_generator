@@ -26,6 +26,9 @@ end
 # Gemfile
 cookbook_file "#{cookbook_dir}/Gemfile"
 
+# CHANGELOG
+cookbook_file "#{cookbook_dir}/CHANGELOG.md"
+
 # chefignore
 cookbook_file "#{cookbook_dir}/chefignore"
 
