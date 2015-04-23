@@ -32,6 +32,11 @@ cookbook_file "#{cookbook_dir}/Berksfile" do
   action :create_if_missing
 end
 
+# Rubocop
+cookbook_file "#{cookbook_dir}/.rubocop.yml" do
+  source 'rubocop.yml'
+end
+
 # TK & Serverspec
 template "#{cookbook_dir}/.kitchen.yml" do
   source 'kitchen.yml.erb'
