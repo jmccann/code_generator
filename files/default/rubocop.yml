@@ -2,6 +2,7 @@ AllCops:
   Exclude:
     - '.kitchen/**/*'
     - 'metadata.rb'
+    - 'Berksfile'
     - 'test/fixtures/cookbooks/**/*'
 
 LineLength:
