@@ -5,7 +5,7 @@ TODO: Enter the cookbook description here.
 ## Supported Platforms
 
 Tested And Validated On
-- CentOS 6.6
+- CentOS 7.x
 
 ## Usage
 
@@ -29,10 +29,12 @@ Include `<%= cookbook_name %>` in your run_list.
 * Spec - ChefSpec
 * Integration - Test Kitchen
 
+Testing requires [ChefDK](https://downloads.chef.io/chef-dk/) be installed.
+
 ```
-bundle exec foodcritic -f any -X spec .
-bundle exec rspec --color --format progress
-bundle exec rubocop
+foodcritic -f any -X spec .
+rubocop
+rspec --color --format progress
 ```
 
 ## License and Authors
