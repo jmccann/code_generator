@@ -49,6 +49,11 @@ template "#{cookbook_dir}/.kitchen.yml" do
   action :create_if_missing
 end
 
+template "#{cookbook_dir}/.kitchen.docker.yml" do
+  source 'kitchen.docker.yml.erb'
+  helpers(ChefDK::Generator::TemplateHelper)
+  action :create_if_missing
+
 directory "#{cookbook_dir}/test/integration/default/serverspec" do
   recursive true
 end
