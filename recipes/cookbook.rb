@@ -23,9 +23,6 @@ template "#{cookbook_dir}/LICENSE" do
   helpers(ChefDK::Generator::TemplateHelper)
 end
 
-# Gemfile
-cookbook_file "#{cookbook_dir}/Gemfile"
-
 # CHANGELOG
 cookbook_file "#{cookbook_dir}/CHANGELOG.md"
 

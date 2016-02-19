@@ -29,13 +29,17 @@ Include `<%= cookbook_name %>` in your run_list.
 * Spec - ChefSpec
 * Integration - Test Kitchen
 
-Testing requires [ChefDK](https://downloads.chef.io/chef-dk/) be installed.
+Testing requires [ChefDK](https://downloads.chef.io/chef-dk/) be installed using it's native gems.
 
 ```
 foodcritic -f any -X spec .
 rubocop
 rspec --color --format progress
 ```
+
+If you run into issues testing please first remove any additional gems you may
+have installed into your ChefDK environment.  Extra gems can be found and removed
+at `~/.chefdk/gem`.
 
 ## License and Authors
 
