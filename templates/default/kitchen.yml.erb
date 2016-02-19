@@ -5,8 +5,11 @@ driver:
 provisioner:
   name: chef_zero
 
+verifier:
+  name: inspec
+
 platforms:
-  - name: centos-7.0
+  - name: centos-7.1
 
 suites:
   - name: default
