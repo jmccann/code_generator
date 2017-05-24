@@ -1,13 +1,33 @@
 
 context = ChefDK::Generator.context
-cookbook_dir = File.join(context.cookbook_root, context.cookbook_name)
+cookbook_dir = File.join(context.cookbook_root, "#{context.cookbook_name}-cookbook")
+
+silence_chef_formatter unless context.verbose
+
+generator_desc('Ensuring correct cookbook file content')
 
 # cookbook root dir
 directory cookbook_dir
 
 # metadata.rb
+spdx_license =  case context.license
+                when 'apachev2'
+                  'Apache-2.0'
+                when 'mit'
+                  'MIT'
+                when 'gplv2'
+                  'GPL-2.0'
+                when 'gplv3'
+                  'GPL-3.0'
+                else
+                  'All Rights Reserved'
+                end
+
 template "#{cookbook_dir}/metadata.rb" do
   helpers(ChefDK::Generator::TemplateHelper)
+  variables(
+    spdx_license: spdx_license
+  )
   action :create_if_missing
 end
 
@@ -17,47 +37,44 @@ template "#{cookbook_dir}/README.md" do
   action :create_if_missing
 end
 
-# LICENSE
-template "#{cookbook_dir}/LICENSE" do
-  source "LICENSE.#{context.license}.erb"
-  helpers(ChefDK::Generator::TemplateHelper)
-end
-
-# CHANGELOG
-cookbook_file "#{cookbook_dir}/CHANGELOG.md"
-
 # chefignore
 cookbook_file "#{cookbook_dir}/chefignore"
 
-# Berks
-cookbook_file "#{cookbook_dir}/Berksfile" do
-  action :create_if_missing
+if context.use_berkshelf
+
+  # Berks
+  cookbook_file "#{cookbook_dir}/Berksfile" do
+    action :create_if_missing
+  end
+else
+
+  # Policyfile
+  template "#{cookbook_dir}/Policyfile.rb" do
+    source 'Policyfile.rb.erb'
+    helpers(ChefDK::Generator::TemplateHelper)
+  end
+
 end
 
-# Rubocop
-cookbook_file "#{cookbook_dir}/.rubocop.yml" do
-  source 'rubocop.yml'
-end
-
-# TK & Serverspec
+# Test Kitchen
 template "#{cookbook_dir}/.kitchen.yml" do
-  source 'kitchen.yml.erb'
+  if context.use_berkshelf
+    source 'kitchen.yml.erb'
+  else
+    source 'kitchen_policyfile.yml.erb'
+  end
+
   helpers(ChefDK::Generator::TemplateHelper)
   action :create_if_missing
 end
 
-template "#{cookbook_dir}/.kitchen.docker.yml" do
-  source 'kitchen.docker.yml.erb'
-  helpers(ChefDK::Generator::TemplateHelper)
-  action :create_if_missing
-end
-
-directory "#{cookbook_dir}/test/integration/default" do
+# Inspec
+directory "#{cookbook_dir}/test/smoke/default" do
   recursive true
 end
 
-template "#{cookbook_dir}/test/integration/default/default_spec.rb" do
-  source 'inspec_default_spec.rb.erb'
+template "#{cookbook_dir}/test/smoke/default/default_test.rb" do
+  source 'inspec_default_test.rb.erb'
   helpers(ChefDK::Generator::TemplateHelper)
   action :create_if_missing
 end
@@ -68,11 +85,17 @@ directory "#{cookbook_dir}/spec/unit/recipes" do
 end
 
 cookbook_file "#{cookbook_dir}/spec/spec_helper.rb" do
+  if context.use_berkshelf
+    source 'spec_helper.rb'
+  else
+    source 'spec_helper_policyfile.rb'
+  end
+
   action :create_if_missing
 end
 
 template "#{cookbook_dir}/spec/unit/recipes/default_spec.rb" do
-  source "recipe_spec.rb.erb"
+  source 'recipe_spec.rb.erb'
   helpers(ChefDK::Generator::TemplateHelper)
   action :create_if_missing
 end
@@ -82,22 +105,38 @@ end
 directory "#{cookbook_dir}/recipes"
 
 template "#{cookbook_dir}/recipes/default.rb" do
-  source "recipe.rb.erb"
+  source 'recipe.rb.erb'
   helpers(ChefDK::Generator::TemplateHelper)
   action :create_if_missing
 end
 
 # git
 if context.have_git
-  if !context.skip_git_init
+  unless context.skip_git_init
 
-    execute("initialize-git") do
-      command("git init .")
+    generator_desc('Committing cookbook files to git')
+
+    execute('initialize-git') do
+      command('git init .')
       cwd cookbook_dir
     end
+
   end
 
   cookbook_file "#{cookbook_dir}/.gitignore" do
-    source "gitignore"
+    source 'gitignore'
+  end
+
+  unless context.skip_git_init
+
+    execute('git-add-new-files') do
+      command('git add .')
+      cwd cookbook_dir
+    end
+
+    execute('git-commit-new-files') do
+      command('git commit -m "Add generated cookbook content"')
+      cwd cookbook_dir
+    end
   end
 end
